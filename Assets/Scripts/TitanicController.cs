@@ -4,21 +4,19 @@
 public class TitanicController : MonoBehaviour
 {
     [Header("Steering")]
-    [SerializeField] private float _maxRudderAngle = 30f;
+    [SerializeField] private float _maxSteerTorque = 1000f;
 
     [Header("References")]
     [SerializeField] private Engine _engine;
     [SerializeField] private SteeringWheel _wheel;
 
-    private float _currentRudderAngle;
+    private float _currentTorque;
 
     private Rigidbody _rb;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
-
-        _currentRudderAngle = 0f;
     }
 
     private void FixedUpdate()
@@ -29,9 +27,9 @@ public class TitanicController : MonoBehaviour
 
     public void ApplySteering()
     {
-        _currentRudderAngle = _maxRudderAngle * (_wheel.CurrentAngle / _wheel.MaxSteerAngle);
-
-        _rb.AddTorque(transform.up * _currentRudderAngle, ForceMode.Force);
+        float steerFraction = _wheel.CurrentAngle / _wheel.MaxSteerAngle;
+        _currentTorque = steerFraction * _maxSteerTorque;
+        _rb.AddTorque(transform.up * _currentTorque, ForceMode.Force);
     }
 
     private void OnTriggerEnter(Collider other)
