@@ -1155,7 +1155,7 @@ MonoBehaviour:
   _angleSlowAstern: 35
   _angleFullAstern: 68
   _moveSpeed: 240
-  _engine: {fileID: 0}
+  _engine: {fileID: 1710287852}
 --- !u!135 &1462374259
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1370,6 +1370,7 @@ MonoBehaviour:
   _maxRPM: 75
   _rpmAcceleration: 0.41
   _throttleResponseSpeed: 1
+  _maxAcceleration: 39
 --- !u!1 &2008465323
 GameObject:
   m_ObjectHideFlags: 0
@@ -20729,7 +20730,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0369784dddc6dad459d65d507450e104, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxSteerTorque: 4500
+  _maxSteerTorque: 1000
+  _rayDistance: 1000
   _engine: {fileID: 1710287852}
   _wheel: {fileID: 1193299756}
 --- !u!54 &3469287837237967993
@@ -20741,7 +20743,7 @@ Rigidbody:
   m_GameObject: {fileID: 919132149466638700}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 0
+  m_Drag: 0.5
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -20757,7 +20759,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 48
+  m_Constraints: 52
   m_CollisionDetection: 0
 --- !u!23 &3479391800143907657
 MeshRenderer:

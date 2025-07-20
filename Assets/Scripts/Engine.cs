@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Engine : MonoBehaviour
 {
@@ -9,54 +7,52 @@ public class Engine : MonoBehaviour
     [SerializeField] private float _maxRPM = 75f;
     [SerializeField] private float _rpmAcceleration = 0.41f;
 
-    public float MaxSpeed => _maxSpeed;
-
-
     [Header("Throttle")]
     [SerializeField] private float _throttleResponseSpeed = 1f;
+
+    [Header("Thrust")]
+    [SerializeField] private float _maxAcceleration = 10f;
 
     private float _currentRPM;
     private float _currentThrottle;
     private float _targetThrottle;
-    
-    private float _currentSpeed;
+
     void Start()
     {
-        _currentThrottle = 1f;
-        _targetThrottle = 1f;
+        _currentThrottle = _targetThrottle = 1f;
         _currentRPM = _maxRPM;
     }
 
-    void Update()
+    public void SetThrottle(float t)
     {
-        float targetRPM = _currentThrottle * _maxRPM;
-        _currentRPM = Mathf.MoveTowards(
-            _currentRPM,
-            targetRPM,
-            _rpmAcceleration * Time.deltaTime
-        );
-    }
-    public void SetThrottle(float throttle)
-    {
-        _targetThrottle = throttle;
+        _targetThrottle = Mathf.Clamp01(t);
     }
     public void ApplyEngineForce(Rigidbody rb)
     {
         _currentThrottle = Mathf.MoveTowards(
-           _currentThrottle,
-           _targetThrottle,
-           _throttleResponseSpeed * Time.fixedDeltaTime
-       );
-
-        _currentSpeed = _maxSpeed * (_currentRPM / _maxRPM);
-
-        if (rb.velocity.magnitude >= _currentSpeed)
-            return;
-
-        rb.AddForce(
-            rb.gameObject.transform.up * _currentSpeed,
-            ForceMode.Force
+            _currentThrottle,
+            _targetThrottle,
+            _throttleResponseSpeed * Time.fixedDeltaTime
         );
+
+        float desiredRPM = _currentThrottle * _maxRPM;
+        _currentRPM = Mathf.MoveTowards(
+            _currentRPM,
+            desiredRPM,
+            _rpmAcceleration * Time.fixedDeltaTime
+        );
+
+        float speedTarget = _maxSpeed * (_currentRPM / _maxRPM);
+
+        Vector3 v = rb.velocity;
+        float curSpeed = v.magnitude;
+        float delta = _maxAcceleration * Time.fixedDeltaTime;
+        float newSpeed = Mathf.MoveTowards(curSpeed, speedTarget, delta);
+
+        if (curSpeed > 0.01f)
+            rb.velocity = v.normalized * newSpeed;
+        else
+            rb.velocity = transform.up * newSpeed;
 
     }
 }
