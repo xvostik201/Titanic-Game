@@ -20729,7 +20729,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0369784dddc6dad459d65d507450e104, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxSteerTorque: 30
+  _maxSteerTorque: 4500
   _engine: {fileID: 1710287852}
   _wheel: {fileID: 1193299756}
 --- !u!54 &3469287837237967993
