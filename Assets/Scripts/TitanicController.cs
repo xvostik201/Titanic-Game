@@ -49,13 +49,4 @@ public class TitanicController : MonoBehaviour
         Vector3 newDir = Vector3.RotateTowards(currentDir, targetDir, maxRadians, 0f);
         _rb.velocity = newDir * _rb.velocity.magnitude;
     }
-    private void OnTriggerEnter(Collider other)
-    {
-        var iceberg = other.GetComponentInParent<Iceberg>();
-        if (iceberg != null)
-        {
-            Time.timeScale = 0f;
-            Debug.LogWarning("GAME OVER, YOU HIT AN ICEBERG");
-        }
-    }
 }
