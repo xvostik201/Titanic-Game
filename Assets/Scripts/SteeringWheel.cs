@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class SteeringWheel : MonoBehaviour
 {
+
     [SerializeField] private float _maxSteerAngle = 1800f;
     [SerializeField] private float _activationDistance = 0.05f;
     [SerializeField] private float _inertiaDamping = 5f;
@@ -16,6 +18,8 @@ public class SteeringWheel : MonoBehaviour
     private Vector3 _lastDir;
     private float _currentAngle;
     private float _inertiaSpeed;
+
+    public event Action<float> OnSteeringChangedNormalized;
 
     private void Update()
     {
@@ -54,6 +58,8 @@ public class SteeringWheel : MonoBehaviour
             steerAmount = raw;
             _inertiaSpeed = Mathf.Lerp(_inertiaSpeed, 0f, Time.deltaTime * _inertiaDamping);
         }
+        float steerFraction = _currentAngle / _maxSteerAngle;
+        OnSteeringChangedNormalized?.Invoke(steerFraction);
 
         if (Input.GetMouseButtonUp(0))
             _isDragging = false;

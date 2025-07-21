@@ -13,6 +13,9 @@ public class Engine : MonoBehaviour
     [Header("Thrust")]
     [SerializeField] private float _maxAcceleration = 10f;
 
+    [Header("Reference")]
+    [SerializeField] private EngineTelegraph _telegraph;
+
     private float _currentRPM;
     private float _currentThrottle;
     private float _targetThrottle;
@@ -25,7 +28,7 @@ public class Engine : MonoBehaviour
 
     public void SetThrottle(float t)
     {
-        _targetThrottle = Mathf.Clamp01(t);
+        _targetThrottle = Mathf.Clamp(t, -1f, 1f);
     }
     public void ApplyEngineForce(Rigidbody rb)
     {
@@ -54,5 +57,14 @@ public class Engine : MonoBehaviour
         else
             rb.velocity = transform.up * newSpeed;
 
+    }
+    private void OnEnable()
+    {
+        _telegraph.OnThrottleChanged += SetThrottle;
+    }
+
+    private void OnDisable()
+    {
+        _telegraph.OnThrottleChanged -= SetThrottle;
     }
 }

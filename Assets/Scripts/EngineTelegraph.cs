@@ -1,24 +1,29 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class EngineTelegraph : MonoBehaviour
 {
+    [Header("Throttle thresholds (pixels)")]
     [SerializeField] private float _slowThreshold = 50f;
     [SerializeField] private float _fullThreshold = 100f;
+
+    [Header("Engine telegraph angles")]
     [SerializeField] private float _angleFullAhead = -68f;
     [SerializeField] private float _angleSlowAhead = -35f;
     [SerializeField] private float _angleStop = 0f;
     [SerializeField] private float _angleSlowAstern = 35f;
     [SerializeField] private float _angleFullAstern = 68f;
+
+    [Header("Engine telegraph angle move speed")]
     [SerializeField] private float _moveSpeed = 40f;
 
-    [SerializeField] private Engine _engine;
+    public event Action<float> OnThrottleChanged;
 
     private Vector3 _mouseDownPos;
     private bool _isDragging;
     private float _currentAngle;
     private float _targetAngle;
     private float _currentThrottle;
-    private Coroutine _returnCoroutine;
 
     private void Start()
     {
@@ -28,8 +33,6 @@ public class EngineTelegraph : MonoBehaviour
     {
         _isDragging = true;
         _mouseDownPos = Input.mousePosition;
-        if (_returnCoroutine != null)
-            StopCoroutine(_returnCoroutine);
     }
 
     private void OnMouseDrag()
@@ -67,7 +70,7 @@ public class EngineTelegraph : MonoBehaviour
 
         _targetAngle = newAngle;
         _currentThrottle = newThrottle;
-        _engine?.SetThrottle(_currentThrottle);
+        OnThrottleChanged?.Invoke(_currentThrottle);
     }
 
     private void OnMouseUp()

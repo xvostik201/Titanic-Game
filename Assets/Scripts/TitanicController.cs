@@ -26,16 +26,14 @@ public class TitanicController : MonoBehaviour
     private void FixedUpdate()
     {
         _engine.ApplyEngineForce(_rb);
-        ApplySteering();
         AlignVelocityToHeading();
 
         Debug.DrawRay(transform.position, transform.up * _rayDistance, Color.green);
         Debug.DrawRay(transform.position, _rb.velocity.normalized * _rayDistance, Color.red);
     }
 
-    public void ApplySteering()
+    public void ApplySteering(float steerFraction)
     {
-        float steerFraction = _wheel.CurrentAngle / _wheel.MaxSteerAngle;
         _currentTorque = steerFraction * _maxSteerTorque;
         _rb.AddTorque(transform.up * -_currentTorque, ForceMode.Force);
     }
@@ -48,5 +46,14 @@ public class TitanicController : MonoBehaviour
         float maxRadians = _velocityAlignSpeed * Mathf.Deg2Rad * Time.fixedDeltaTime;
         Vector3 newDir = Vector3.RotateTowards(currentDir, targetDir, maxRadians, 0f);
         _rb.velocity = newDir * _rb.velocity.magnitude;
+    }
+    private void OnEnable()
+    {
+        _wheel.OnSteeringChangedNormalized += ApplySteering;
+    }
+
+    private void OnDisable()
+    {
+        _wheel.OnSteeringChangedNormalized -= ApplySteering;
     }
 }

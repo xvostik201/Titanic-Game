@@ -16,7 +16,8 @@ public class IcebergShardActivator : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (_activated) return;
-        if (!other.TryGetComponent<TitanicController>(out _)) return;
+        TitanicController titanic = other.GetComponentInParent<TitanicController>();
+        if (titanic == null) return;
         _activated = true;
         Vector3 hitPoint = other.ClosestPoint(transform.position);
         Collider[] cols = Physics.OverlapSphere(hitPoint, _activationRadius);
