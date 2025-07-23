@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 
-[RequireComponent(typeof(AudioSource))]
 public class EngineTelegraph : MonoBehaviour
 {
     [Header("Throttle thresholds (pixels)")]
