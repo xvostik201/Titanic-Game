@@ -28,14 +28,15 @@ public class TitanicController : MonoBehaviour
         _engine.ApplyEngineForce();
         AlignVelocityToHeading();
 
+        _rb.AddTorque(transform.up * -_currentTorque * _maxSteerTorque, ForceMode.Force);
+        
         Debug.DrawRay(transform.position, transform.up * _rayDistance, Color.green);
         Debug.DrawRay(transform.position, _rb.velocity.normalized * _rayDistance, Color.red);
     }
 
     public void ApplySteering(float steerFraction)
     {
-        _currentTorque = steerFraction * _maxSteerTorque;
-        _rb.AddTorque(transform.up * -_currentTorque, ForceMode.Force);
+        _currentTorque = steerFraction;
     }
     private void AlignVelocityToHeading()
     {

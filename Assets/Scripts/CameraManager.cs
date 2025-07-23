@@ -6,15 +6,8 @@ using UnityEngine;
 public class CameraManager : MonoBehaviour
 {
     [SerializeField] private Camera[] _allCameras;
-    private AudioListener[] _audioListeners; 
+    [SerializeField] private AudioListener[] _audioListeners; 
     private int _currentCameraIndex = 0;
-
-    private void Awake()
-    {
-        _audioListeners = new AudioListener[_allCameras.Length];
-        for (int i = 0; i < _allCameras.Length; i++)
-            _audioListeners[i] = _allCameras[i].gameObject.GetComponent<AudioListener>();
-    }
 
     void Update()
     {
