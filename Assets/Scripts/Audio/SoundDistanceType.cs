@@ -1,0 +1,1 @@
+﻿public enum SoundDistanceType { Near, Normal, Far }
