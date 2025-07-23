@@ -27,7 +27,10 @@ public class EngineTelegraph : MonoBehaviour
     private float   _currentAngle;
     private float   _targetAngle;
     private float   _lastNotifiedThrottle = float.NaN;
-    
+
+    private float _startAngle;
+    private float _startThrottle;
+
     private void Start()
     {
         transform.localRotation   = Quaternion.Euler(_angleFullAhead, 0f, 0f);
@@ -38,44 +41,53 @@ public class EngineTelegraph : MonoBehaviour
 
     private void OnMouseDown()
     {
-        _isDragging   = true;
-        _mouseDownPos = Input.mousePosition;
+        _isDragging     = true;
+        _mouseDownPos   = Input.mousePosition;
+
+        _startAngle     = _targetAngle;
+        _startThrottle  = _lastNotifiedThrottle;
     }
 
     private void OnMouseDrag()
     {
         if (!_isDragging) return;
 
-        float deltaX = Input.mousePosition.x - _mouseDownPos.x;
-        float newAngle, newThrottle;
+        float dx = Input.mousePosition.x - _mouseDownPos.x;
 
-        if (deltaX <= -_fullThreshold)      { newAngle = _angleFullAhead;  newThrottle =  1f;  }
-        else if (deltaX <= -_slowThreshold) { newAngle = _angleSlowAhead;  newThrottle =  0.5f;}
-        else if (deltaX >=  _fullThreshold) { newAngle = _angleFullAstern; newThrottle = -1f;  }
-        else if (deltaX >=  _slowThreshold) { newAngle = _angleSlowAstern; newThrottle = -0.5f;}
-        else                                 { newAngle = _angleStop;       newThrottle =  0f;  }
+        float newAngle    = _startAngle;
+        float newThrottle = _startThrottle;
 
-        _targetAngle = newAngle;
+        if (dx <= -_fullThreshold)       { newAngle = _angleFullAhead;   newThrottle =  1f;  }
+        else if (dx <= -_slowThreshold)  { newAngle = _angleSlowAhead;   newThrottle =  0.5f;}
+        else if (dx >=  _fullThreshold)  { newAngle = _angleFullAstern;  newThrottle = -1f;  }
+        else if (dx >=  _slowThreshold)  { newAngle = _angleSlowAstern;  newThrottle = -0.5f;}
 
-        if (!Mathf.Approximately(newThrottle, _lastNotifiedThrottle))
-        {
-            _lastNotifiedThrottle = newThrottle;
-            OnThrottleChanged?.Invoke(newThrottle);
-            TryPlaySwitchSound();
-        }
+        ApplyState(newAngle, newThrottle);
     }
-    
+
     private void OnMouseUp()
     {
         _isDragging = false;
     }
-    
+
     private void Update()
     {
         if (!Mathf.Approximately(_currentAngle, _targetAngle))
         {
             _currentAngle = Mathf.MoveTowards(_currentAngle, _targetAngle, _moveSpeed * Time.deltaTime);
             transform.localRotation = Quaternion.Euler(_currentAngle, 0f, 0f);
+        }
+    }
+
+    private void ApplyState(float angle, float throttle)
+    {
+        _targetAngle = angle;
+
+        if (!Mathf.Approximately(throttle, _lastNotifiedThrottle))
+        {
+            _lastNotifiedThrottle = throttle;
+            OnThrottleChanged?.Invoke(throttle);
+            TryPlaySwitchSound();
         }
     }
 
