@@ -3,14 +3,10 @@ using UnityEngine;
 
 public class SteeringWheel : MonoBehaviour
 {
-
     [SerializeField] private float _maxSteerAngle = 1800f;
     [SerializeField] private float _activationDistance = 0.05f;
     [SerializeField] private float _inertiaDamping = 5f;
     [SerializeField] private float _maxDeltaPerFrame = 10f;
-
-    public float MaxSteerAngle => _maxSteerAngle;
-    public float CurrentAngle => _currentAngle;
 
     private bool _isDragging;
     private bool _hasStarted;
@@ -20,7 +16,9 @@ public class SteeringWheel : MonoBehaviour
     private float _inertiaSpeed;
 
     public event Action<float> OnSteeringChangedNormalized;
-
+    
+    
+    
     private void Update()
     {
         float steerAmount = 0f;

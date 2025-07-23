@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Engine : MonoBehaviour
 {
@@ -15,8 +16,12 @@ public class Engine : MonoBehaviour
 
     [Header("Reference")]
     [SerializeField] private EngineTelegraph _telegraph;
-
+    
+    public event Action<float> OnSpeedChanged;
+    public event Action<float> OnRPMChanged;
+    
     private float _currentRPM;
+    private float _currentSpeed;
     private float _currentThrottle;
     private float _targetThrottle;
 
@@ -50,13 +55,15 @@ public class Engine : MonoBehaviour
         Vector3 v = rb.velocity;
         float curSpeed = v.magnitude;
         float delta = _maxAcceleration * Time.fixedDeltaTime;
-        float newSpeed = Mathf.MoveTowards(curSpeed, speedTarget, delta);
+        _currentSpeed  = Mathf.MoveTowards(curSpeed, speedTarget, delta);
 
         if (curSpeed > 0.01f)
-            rb.velocity = v.normalized * newSpeed;
+            rb.velocity = v.normalized * _currentSpeed;
         else
-            rb.velocity = transform.up * newSpeed;
-
+            rb.velocity = transform.up * _currentSpeed;
+        
+        OnSpeedChanged?.Invoke(_currentSpeed);
+        OnRPMChanged?.Invoke(_currentRPM);
     }
     private void OnEnable()
     {
