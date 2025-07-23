@@ -11,7 +11,8 @@ public class CameraManager : MonoBehaviour
 
     private void Awake()
     {
-        _audioListeners = _allCameras.GetComponent<AudioListener>();
+        for (int i = 0; i < _allCameras.Length; i++)
+            _audioListeners[i] = _allCameras[i].gameObject.GetComponent<AudioListener>();
     }
 
     void Update()
