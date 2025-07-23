@@ -3,49 +3,43 @@ using UnityEngine;
 
 public class EngineTelegraph : MonoBehaviour
 {
-    [Header("Throttle thresholds (pixels)")]
-    [SerializeField] private float _slowThreshold = 50f;
-    [SerializeField] private float _fullThreshold = 100f;
+    [SerializeField] private float _pixelsPerStep = 45f;
+    [SerializeField] private float _hysteresis = 8f;
 
-    [Header("Engine telegraph angles")]
-    [SerializeField] private float _angleFullAhead   = -68f;
-    [SerializeField] private float _angleSlowAhead   = -35f;
-    [SerializeField] private float _angleStop        =   0f;
-    [SerializeField] private float _angleSlowAstern  =  35f;
-    [SerializeField] private float _angleFullAstern  =  68f;
-
-    [Header("Tween speed")]
+    [SerializeField] private float[] _angles = { -68f, -35f, 0f, 35f, 68f };
     [SerializeField] private float _moveSpeed = 40f;
-
-    [Header("Switch sound")]
     [SerializeField] private float _minPlayInterval = 0.1f;
+
     public event Action<float> OnThrottleChanged;
 
     private float _lastPlayTime = -999f;
     private Vector3 _mouseDownPos;
-    private bool    _isDragging;
-    private float   _currentAngle;
-    private float   _targetAngle;
-    private float   _lastNotifiedThrottle = float.NaN;
+    private bool _isDragging;
 
-    private float _startAngle;
-    private float _startThrottle;
+    private int _currentIndex;
+    private int _targetIndex;
+    private int _startIndex;
+
+    private float _currentAngle;
+    private float _targetAngle;
+
+    private readonly float[] _throttles = { 1f, 0.5f, 0f, -0.5f, -1f };
+    private float _lastNotifiedThrottle = float.NaN;
 
     private void Start()
     {
-        transform.localRotation   = Quaternion.Euler(_angleFullAhead, 0f, 0f);
-        _currentAngle             = _targetAngle = _angleFullAhead;
-        _lastNotifiedThrottle     = 1f;
-        OnThrottleChanged?.Invoke(1f);
+        _currentIndex = _targetIndex = 0;
+        _currentAngle = _targetAngle = _angles[_currentIndex];
+        transform.localRotation = Quaternion.Euler(_currentAngle, 0f, 0f);
+        _lastNotifiedThrottle = _throttles[_currentIndex];
+        OnThrottleChanged?.Invoke(_lastNotifiedThrottle);
     }
 
     private void OnMouseDown()
     {
-        _isDragging     = true;
-        _mouseDownPos   = Input.mousePosition;
-
-        _startAngle     = _targetAngle;
-        _startThrottle  = _lastNotifiedThrottle;
+        _isDragging = true;
+        _mouseDownPos = Input.mousePosition;
+        _startIndex = _targetIndex;
     }
 
     private void OnMouseDrag()
@@ -53,16 +47,11 @@ public class EngineTelegraph : MonoBehaviour
         if (!_isDragging) return;
 
         float dx = Input.mousePosition.x - _mouseDownPos.x;
+        int steps = Mathf.Abs(dx) > _hysteresis ? (int)Mathf.Floor(Mathf.Abs(dx) / _pixelsPerStep) * Math.Sign(dx) : 0;
+        int newIndex = Mathf.Clamp(_startIndex + steps, 0, _angles.Length - 1);
 
-        float newAngle    = _startAngle;
-        float newThrottle = _startThrottle;
-
-        if (dx <= -_fullThreshold)       { newAngle = _angleFullAhead;   newThrottle =  1f;  }
-        else if (dx <= -_slowThreshold)  { newAngle = _angleSlowAhead;   newThrottle =  0.5f;}
-        else if (dx >=  _fullThreshold)  { newAngle = _angleFullAstern;  newThrottle = -1f;  }
-        else if (dx >=  _slowThreshold)  { newAngle = _angleSlowAstern;  newThrottle = -0.5f;}
-
-        ApplyState(newAngle, newThrottle);
+        if (newIndex != _targetIndex)
+            ApplyIndex(newIndex);
     }
 
     private void OnMouseUp()
@@ -79,10 +68,13 @@ public class EngineTelegraph : MonoBehaviour
         }
     }
 
-    private void ApplyState(float angle, float throttle)
+    private void ApplyIndex(int idx)
     {
-        _targetAngle = angle;
+        _targetIndex = idx;
+        _currentIndex = idx;
+        _targetAngle = _angles[idx];
 
+        float throttle = _throttles[idx];
         if (!Mathf.Approximately(throttle, _lastNotifiedThrottle))
         {
             _lastNotifiedThrottle = throttle;
