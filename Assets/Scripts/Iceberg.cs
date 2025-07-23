@@ -21,6 +21,8 @@ public class IcebergShardActivator : MonoBehaviour
         _activated = true;
         Vector3 hitPoint = other.ClosestPoint(transform.position);
         Collider[] cols = Physics.OverlapSphere(hitPoint, _activationRadius);
+        AudioManager.Instance.Play("Iceberg0", hitPoint,false);
+        AudioManager.Instance.Play("Iceberg1", hitPoint, false);
         foreach (var col in cols)
         {
             var rb = col.attachedRigidbody;

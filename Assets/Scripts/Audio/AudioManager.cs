@@ -38,7 +38,7 @@ public class AudioManager : MonoBehaviour
             Destroy(gameObject);
     }
 
-    public void Play(string soundName, Vector3 position, Transform parent = null, bool hasParent = true)
+    public void Play(string soundName, Vector3 position, bool hasParent = true, Transform parent = null)
     {
         if (!_soundDict.TryGetValue(soundName, out var sd))
         {

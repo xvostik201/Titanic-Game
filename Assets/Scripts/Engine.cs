@@ -16,6 +16,8 @@ public class Engine : MonoBehaviour
 
     [Header("Reference")]
     [SerializeField] private EngineTelegraph _telegraph;
+
+    [SerializeField] private Rigidbody _rb;
     
     public event Action<float> OnSpeedChanged;
     public event Action<float> OnRPMChanged;
@@ -28,14 +30,20 @@ public class Engine : MonoBehaviour
     void Start()
     {
         _currentThrottle = _targetThrottle = 1f;
-        _currentRPM = _maxRPM;
+        _currentRPM      = _maxRPM;
+
+        _currentSpeed = _maxSpeed;
+        _rb.velocity  = transform.up * _currentSpeed;
+
+        OnRPMChanged?.Invoke(_currentRPM);
+        OnSpeedChanged?.Invoke(_currentSpeed);
     }
 
     public void SetThrottle(float t)
     {
         _targetThrottle = Mathf.Clamp(t, -1f, 1f);
     }
-    public void ApplyEngineForce(Rigidbody rb)
+    public void ApplyEngineForce()
     {
         _currentThrottle = Mathf.MoveTowards(
             _currentThrottle,
@@ -52,15 +60,15 @@ public class Engine : MonoBehaviour
 
         float speedTarget = _maxSpeed * (_currentRPM / _maxRPM);
 
-        Vector3 v = rb.velocity;
+        Vector3 v = _rb.velocity;
         float curSpeed = v.magnitude;
         float delta = _maxAcceleration * Time.fixedDeltaTime;
         _currentSpeed  = Mathf.MoveTowards(curSpeed, speedTarget, delta);
 
         if (curSpeed > 0.01f)
-            rb.velocity = v.normalized * _currentSpeed;
+            _rb.velocity = v.normalized * _currentSpeed;
         else
-            rb.velocity = transform.up * _currentSpeed;
+            _rb.velocity = transform.up * _currentSpeed;
         
         OnSpeedChanged?.Invoke(_currentSpeed);
         OnRPMChanged?.Invoke(_currentRPM);

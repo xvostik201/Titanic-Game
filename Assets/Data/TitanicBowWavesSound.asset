@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   soundName: TitanicBowWavesSound
   clip: {fileID: 8300000, guid: a009c1be09ee9d946a89898d63ff4418, type: 3}
-  volume: 1
-  loop: 0
-  distanceType: 1
+  volume: 0.5
+  loop: 1
+  distanceType: 2

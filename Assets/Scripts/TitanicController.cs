@@ -25,7 +25,7 @@ public class TitanicController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _engine.ApplyEngineForce(_rb);
+        _engine.ApplyEngineForce();
         AlignVelocityToHeading();
 
         Debug.DrawRay(transform.position, transform.up * _rayDistance, Color.green);

@@ -16,4 +16,4 @@ MonoBehaviour:
   clip: {fileID: 8300000, guid: a944437b77945834c8bdde560aca7a0c, type: 3}
   volume: 1
   loop: 0
-  distanceType: 1
+  distanceType: 0
