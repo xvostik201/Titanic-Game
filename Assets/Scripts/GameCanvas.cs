@@ -60,17 +60,36 @@ public class GameCanvas : MonoBehaviour
     private void UpdateEngineStatsText()
     {
         _engineStatsText.text =
-            $"Engine stats:\n" +
-            $"• Throttle: {_currentThrottle:F2}\n" +
-            $"• RPM: {_currentRPM:F2}\n" +
-            $"• Current speed: {_currentSpeed:F2}\n";
+            $"Статистика двигателя:\n" +
+            $"• Газ: {ThrottleToString(_currentThrottle)}\n" +
+            $"• Обороты винтов: {_currentRPM:F1} в минуту\n" +
+            $"• Текущая скорость: {_currentSpeed:F1} км/ч\n";
 
+    }
+
+    private string ThrottleToString(float throttle)
+    {
+        switch (throttle)
+        {
+            case 1f:
+                return "Полный вперед";
+            case 0.5f:
+                return "Вперед";
+            case 0f:
+                return "Стоп";
+            case -0.5f:
+                return "Назад";
+            case -1f:
+                return "Полный назад";
+            default:
+                return "None throttle";
+        }
     }
 
     private void UpdateSteeringWheelStatsText()
     {
         _steeringWheelStatsText.text =
-            $"Steering wheel:\n" +
-            $"• Angle fraction: {_currentSteerFraction:F2}";
+            $"Статистика руля:\n" +
+            $"• Поворот руля: {_currentSteerFraction:F2}";
     }
 }
